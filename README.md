@@ -6,6 +6,12 @@
 
 它不是基金净值估算器，也不提供交易建议。
 
+## 在线体验
+
+公开网站：<https://lmqinsydney-lab.github.io/bond-monitor/>
+
+网站由 GitHub Pages 托管。GitHub Actions 会在代码推送后、手动触发时，以及周一至周五 22:15（Asia/Shanghai）更新数据并重新发布。线上版本为静态只读页面；本地版本仍可使用“立即更新”。
+
 ## 运行
 
 要求：macOS 或其他带 Python 3.9+ 的系统。首版仅使用 Python 标准库。

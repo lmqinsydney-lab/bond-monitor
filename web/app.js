@@ -5,6 +5,7 @@ const state = {
   seriesByDate: {},
   comparison: { fundCode: '006985', range: '60', selectedDate: null }
 };
+const isPagesDeployment = location.hostname.endsWith('.github.io');
 const bands = { low: '压力较低', watch: '需要关注', high: '压力较高', insufficient: '数据不足' };
 const componentLabels = { rate: '利率', credit: '信用', funding: '融资' };
 const bondClassLabels = { credit: '信用债', rate: '利率债', other: '其他' };
@@ -78,7 +79,7 @@ function marketMetricPresentation(key, point, fallbackLabel = '') {
 }
 
 async function loadDashboard() {
-  const response = await fetch(`/data/dashboard.json?t=${Date.now()}`, { cache: 'no-store' });
+  const response = await fetch(`./data/dashboard.json?t=${Date.now()}`, { cache: 'no-store' });
   if (!response.ok) throw new Error(`数据读取失败（${response.status}）`);
   state.data = await response.json();
   renderAll();
@@ -683,7 +684,15 @@ async function pollStatus() {
   throw new Error('更新仍在运行，请稍后刷新页面');
 }
 
-document.querySelector('#refresh-button').addEventListener('click', refreshData);
+const refreshButton = document.querySelector('#refresh-button');
+if (isPagesDeployment) {
+  refreshButton.hidden = true;
+} else {
+  refreshButton.addEventListener('click', refreshData);
+}
 loadDashboard().catch(error => {
-  document.querySelector('#main').innerHTML = `<section class="panel"><h2>数据暂时无法读取</h2><p>${escapeHtml(error.message)}</p><p>请先运行 <code>python3 app.py update</code>。</p></section>`;
+  const recovery = isPagesDeployment
+    ? '公开数据暂时不可用，请稍后刷新页面。'
+    : '请先运行 <code>python3 app.py update</code>。';
+  document.querySelector('#main').innerHTML = `<section class="panel"><h2>数据暂时无法读取</h2><p>${escapeHtml(error.message)}</p><p>${recovery}</p></section>`;
 });

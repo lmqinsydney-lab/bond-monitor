@@ -6,3 +6,4 @@ data/*.db-*
 logs/*.log
 web/data/dashboard.json
 web/data/*.csv
+
