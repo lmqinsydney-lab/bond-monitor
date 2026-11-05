@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>债市监测</title>
+  <link rel="stylesheet" href="/styles.css?v=20261102-4">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">债</span>
+        <div>
+          <h1>债市监测</h1>
+          <p>把公开市场变化翻译成三只债基的压力线索</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="freshness" id="freshness" aria-live="polite">
+          <span class="status-dot neutral"></span>
+          <span>正在读取数据…</span>
+        </div>
+        <button class="button primary" id="refresh-button" type="button">
+          <span aria-hidden="true">↻</span><span>立即更新</span>
+        </button>
+        <a class="button secondary" href="/download/market-history.csv" download>
+          <span aria-hidden="true">↓</span><span>导出 CSV</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell" id="main">
+    <section class="intro" aria-labelledby="intro-title">
+      <div>
+        <p class="eyebrow">基金真实净值</p>
+        <h2 id="intro-title">先看今天实际涨跌</h2>
+      </div>
+      <p class="intro-copy">每张卡片以真实单位净值和当日涨跌为主，相关债券收益率与资金成本合并放在下面的小字中。</p>
+    </section>
+
+    <section class="fund-nav-grid" id="fund-nav-overview" aria-label="三只基金最新净值">
+      <div class="skeleton card"></div><div class="skeleton card"></div><div class="skeleton card"></div>
+    </section>
+
+    <section class="panel holdings-panel" aria-labelledby="holdings-title">
+      <div class="holdings-head">
+        <div>
+          <p class="eyebrow">2026 年三季报</p>
+          <h2 id="holdings-title">我的基金到底买了什么</h2>
+          <p>按公开季报的债券品种汇总，区分信用债、利率债和暂不能归类的其他债券。</p>
+        </div>
+        <div class="holdings-legend" aria-label="债券分类图例">
+          <span><i class="credit" aria-hidden="true"></i>信用债</span>
+          <span><i class="rate" aria-hidden="true"></i>利率债</span>
+          <span><i class="other" aria-hidden="true"></i>其他</span>
+        </div>
+      </div>
+      <div class="holdings-grid" id="fund-holdings" aria-live="polite">
+        <div class="skeleton card"></div><div class="skeleton card"></div><div class="skeleton card"></div>
+      </div>
+      <p class="holdings-disclosure">占比口径为“占基金资产净值”。基金使用回购融资时，债券仓位可以超过 100%。季报公开完整的品种汇总，但逐只债券只披露前五大持仓，并非实时全仓。</p>
+    </section>
+
+    <section class="analysis-grid">
+      <article class="panel chart-panel" aria-labelledby="trend-title">
+        <div class="panel-head chart-head">
+          <div>
+            <p class="eyebrow">2020 至今</p>
+            <h2 id="trend-title">市场趋势</h2>
+          </div>
+          <div class="chart-controls">
+            <label>指标
+              <select id="series-select" aria-label="选择趋势指标"></select>
+            </label>
+            <div class="range-group" role="group" aria-label="选择时间范围">
+              <button type="button" data-range="30">1月</button>
+              <button type="button" data-range="90">3月</button>
+              <button type="button" data-range="365">1年</button>
+              <button type="button" data-range="all" class="active">全部</button>
+            </div>
+          </div>
+        </div>
+        <div class="chart-summary" id="chart-summary"></div>
+        <div class="chart-wrap">
+          <svg id="trend-chart" viewBox="0 0 900 330" role="img" aria-labelledby="chart-title chart-desc">
+            <title id="chart-title">市场指标趋势图</title>
+            <desc id="chart-desc">可使用指标和时间范围控件切换数据</desc>
+          </svg>
+          <div class="chart-tooltip" id="chart-tooltip" role="status" aria-live="polite"></div>
+        </div>
+      </article>
+
+      <aside class="panel pressure-guide" aria-labelledby="guide-title">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">如何阅读</p>
+            <h2 id="guide-title">压力不是涨跌预测</h2>
+          </div>
+        </div>
+        <div class="guide-scale" aria-label="压力等级说明">
+          <div><span class="scale-dot low"></span><strong>低</strong><small>市场变化相对有利</small></div>
+          <div><span class="scale-dot watch"></span><strong>关注</strong><small>信号中性或分化</small></div>
+          <div><span class="scale-dot high"></span><strong>高</strong><small>估值与融资压力抬升</small></div>
+        </div>
+        <p class="formula">单项压力 = 50 + 50 ×（40% × 1日变化/3BP + 60% × 5日变化/8BP）</p>
+        <p class="muted">季报持仓不是实时持仓。页面会同时给出画像日期、缺失权重和可信度。</p>
+      </aside>
+    </section>
+
+    <section class="panel comparison-panel" aria-labelledby="comparison-title">
+      <div class="comparison-head">
+        <div>
+          <p class="eyebrow">净值同日对照</p>
+          <h2 id="comparison-title">把基金净值和相关指标放在同一条日期轴上</h2>
+          <p class="comparison-intro">每个日期只显示一张基金卡片：单位净值和涨跌为主，相关收益率与资金成本合并放在下方小字中。</p>
+        </div>
+        <div class="comparison-controls">
+          <label>基金
+            <select id="comparison-fund" aria-label="选择对照基金"></select>
+          </label>
+          <div class="comparison-range range-group" role="group" aria-label="选择相关性时间范围">
+            <button type="button" data-comparison-range="20">20日</button>
+            <button type="button" data-comparison-range="60" class="active">60日</button>
+            <button type="button" data-comparison-range="120">120日</button>
+            <button type="button" data-comparison-range="365">1年</button>
+            <button type="button" data-comparison-range="all">全部</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-toolbar" aria-label="选择净值日期">
+        <button class="date-step" id="comparison-prev" type="button" aria-label="前一个净值日">←</button>
+        <label>对照日期
+          <input id="comparison-date" type="date" aria-label="选择净值日期">
+        </label>
+        <button class="date-step" id="comparison-next" type="button" aria-label="后一个净值日">→</button>
+        <span id="comparison-date-note" class="date-note"></span>
+        <button class="button secondary comparison-export" id="comparison-export" type="button">
+          <span aria-hidden="true">↓</span><span>导出当前对照</span>
+        </button>
+      </div>
+
+      <div class="comparison-day-grid" id="comparison-day" aria-live="polite"></div>
+
+      <div class="sync-chart-shell">
+        <div class="sync-chart-head">
+          <div>
+            <h3>同步变化</h3>
+            <p>每一行独立缩放，零轴上下分别表示上涨和下跌；点击图表可以切换日期。</p>
+          </div>
+          <span class="keyboard-hint">聚焦图表后可用 ← → 切换日期</span>
+        </div>
+        <div class="sync-chart-wrap">
+          <svg id="comparison-chart" viewBox="0 0 980 480" role="img" tabindex="0" aria-labelledby="comparison-chart-title comparison-chart-desc">
+            <title id="comparison-chart-title">基金净值与债市指标同步变化图</title>
+            <desc id="comparison-chart-desc">基金日收益和相关指标单日变化使用共同日期轴上下排列</desc>
+          </svg>
+        </div>
+      </div>
+
+      <div class="correlation-head">
+        <div>
+          <h3>样本内相关性</h3>
+          <p>收益率、利差或资金价格上涨通常增加债基压力，因此负相关往往更符合预期；相关不代表因果。</p>
+        </div>
+        <span id="correlation-window"></span>
+      </div>
+      <div class="correlation-grid" id="correlation-grid"></div>
+    </section>
+
+    <section class="fund-section" aria-labelledby="fund-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">基金对比</p>
+          <h2 id="fund-title">同是债券基金，受力结构并不一样</h2>
+        </div>
+        <p>点击卡片下方“查看计算依据”，可以看到指标权重和具体变化。</p>
+      </div>
+      <div class="fund-grid" id="funds"></div>
+    </section>
+
+    <section class="panel quality-panel" aria-labelledby="quality-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">可追溯性</p>
+          <h2 id="quality-title">数据质量与当前缺口</h2>
+        </div>
+      </div>
+      <div class="quality-grid">
+        <div>
+          <h3>当前缺失</h3>
+          <ul id="missing-list"></ul>
+        </div>
+        <div>
+          <h3>口径说明</h3>
+          <ul id="quality-notes"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <p>仅供个人研究。数据可能延迟；基金压力为公开季报代理，不代表实时持仓、实时净值或投资建议。</p>
+    <p id="generated-at"></p>
+  </footer>
+
+  <template id="metric-template">
+    <article class="metric-card card">
+      <div class="metric-label"></div>
+      <div class="metric-direction"></div>
+      <div class="metric-details"></div>
+      <div class="metric-meta"></div>
+    </article>
+  </template>
+
+  <script src="/app.js?v=20261102-4" defer></script>
+</body>
+</html>
