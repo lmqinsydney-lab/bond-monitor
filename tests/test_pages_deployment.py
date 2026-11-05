@@ -17,10 +17,12 @@ class PagesDeploymentTest(unittest.TestCase):
 
     def test_pages_mode_hides_server_only_refresh(self) -> None:
         script = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+        styles = (ROOT / "web" / "styles.css").read_text(encoding="utf-8")
 
         self.assertIn("location.hostname.endsWith('.github.io')", script)
         self.assertIn("refreshButton.hidden = true", script)
         self.assertIn("refreshButton.addEventListener('click', refreshData)", script)
+        self.assertIn("[hidden] { display: none !important; }", styles)
 
     def test_workflow_builds_data_before_deploying(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(
